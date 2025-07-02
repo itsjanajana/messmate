@@ -1,870 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MessMate App</title>
-<style>
-  /* Reset & base */
-  * {
-    box-sizing: border-box;
-  }
-  body, html {
-    margin: 0; padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #fffde7;
-    color: #3a3a3a;
-    min-height: 100vh;
-  }
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
-  button {
-    cursor: pointer;
-  }
-  /* Login Page */
-  #login-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: #fffde7;
-  }
-  #login-page form {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    width: 320px;
-  }
-  #login-page h2 {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    color: #7cb342;
-  }
-  #login-page label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-  }
-  #login-page input {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1.25rem;
-    border: 1.5px solid #cddc39;
-    border-radius: 5px;
-    font-size: 1rem;
-    outline-offset: 2px;
-  }
-  #login-error {
-    color: #d32f2f;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    min-height: 1.2em;
-    text-align: center;
-  }
-  #login-page button {
-    background: #aed581;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    width: 100%;
-    color: #33691e;
-    transition: background-color 0.25s ease;
-  }
-  #login-page button:hover {
-    background: #9ccc65;
-  }
-
-  /* Main app container */
-  #app {
-    display: flex;
-    height: 100vh;
-  }
-
-  /* Sidebar */
-  #sidebar {
-    width: 250px;
-    background: #dcedc8;
-    color: #33691e;
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem 1rem;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-  }
-  #sidebar.hide {
-    transform: translateX(-260px);
-  }
-  #sidebar h2 {
-    margin: 0 0 1rem 0;
-    font-weight: 700;
-    color: #558b2f;
-  }
-  #sidebar nav {
-    flex-grow: 1;
-  }
-  #sidebar nav a {
-    display: block;
-    padding: 0.7rem 1rem;
-    margin-bottom: 0.3rem;
-    border-radius: 8px;
-    font-weight: 600;
-    color: #33691e;
-    transition: background-color 0.25s ease;
-  }
-  #sidebar nav a.active,
-  #sidebar nav a:hover {
-    background: #c5e1a5;
-    color: #1b5e20;
-  }
-  #sidebar button#logout-btn {
-    margin-top: auto;
-    background: #a5d6a7;
-    border: none;
-    padding: 0.6rem;
-    border-radius: 6px;
-    font-weight: 700;
-    color: #2e7d32;
-    transition: background-color 0.25s ease;
-  }
-  #sidebar button#logout-btn:hover {
-    background: #81c784;
-  }
-  #sidebarToggle {
-    display: none;
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    background: #aed581;
-    border: none;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    color: #33691e;
-    font-weight: 700;
-    z-index: 999;
-  }
-
-  /* Main content area */
-  #main-content {
-    flex-grow: 1;
-    overflow-y: auto;
-    background: #f9fbe7;
-    padding: 1.5rem 2rem;
-    min-width: 0;
-  }
-  h1, h2, h3 {
-    color: #558b2f;
-  }
-
-  /* Pages */
-  .page {
-    display: none;
-  }
-  .page.active {
-    display: block;
-  }
-
-  /* Dashboard tabs */
-  .tabs {
-    display: flex;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #cddc39;
-  }
-  .tab-btn {
-    flex: 1;
-    padding: 0.5rem 0;
-    font-weight: 700;
-    color: #689f38;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: border-color 0.3s ease;
-  }
-  .tab-btn:hover {
-    color: #33691e;
-  }
-  .tab-btn.active {
-    border-bottom-color: #33691e;
-    color: #33691e;
-  }
-  .tab-content {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.2);
-  }
-  .tab-content.hidden {
-    display: none;
-  }
-
-  ul.menu-list {
-    list-style: none;
-    padding-left: 0;
-  }
-  ul.menu-list li {
-    padding: 0.4rem 0.25rem;
-    border-bottom: 1px solid #e6ee9c;
-  }
-
-  /* Forms */
-  form label {
-    font-weight: 600;
-    display: block;
-    margin: 0.5rem 0 0.3rem;
-  }
-  form input[type="text"],
-  form textarea,
-  form select {
-    width: 100%;
-    padding: 0.4rem 0.5rem;
-    border-radius: 5px;
-    border: 1.5px solid #cddc39;
-    font-size: 1rem;
-    resize: vertical;
-  }
-  form textarea {
-    min-height: 80px;
-  }
-  form button[type="submit"] {
-    margin-top: 0.7rem;
-    background: #aed581;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-weight: 700;
-    color: #33691e;
-    transition: background-color 0.3s ease;
-  }
-  form button[type="submit"]:hover {
-    background: #9ccc65;
-  }
-
-  /* List items for queries & suggestions */
-  .list-item {
-    background: #f1f8e9;
-    margin-bottom: 1rem;
-    padding: 0.8rem;
-    border-radius: 10px;
-    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.05);
-  }
-  .list-item strong {
-    color: #558b2f;
-  }
-  .list-item small {
-    font-size: 0.8rem;
-    color: #558b2f;
-    opacity: 0.7;
-  }
-  .votes {
-    margin-top: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-  .votes button {
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    color: #689f38;
-  }
-  .votes button:hover {
-    color: #33691e;
-  }
-  .vote-count {
-    font-weight: 700;
-    color: #33691e;
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    #sidebar {
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 998;
-      height: 100vh;
-      background: #dcedc8;
-      transform: translateX(-260px);
-    }
-    #sidebar.show {
-      transform: translateX(0);
-    }
-    #sidebarToggle {
-      display: block;
-    }
-    #main-content {
-      padding: 1rem;
-    }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MessMate Portal</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #login-page, #app { display: none; height: 100vh; }
+    #login-page { display: flex; align-items: center; justify-content: center; }
+    .login-box { padding: 2rem; border: 1px solid #ccc; border-radius: 8px; }
+    #app { display: flex; }
+    #sidebar { width: 200px; background: #222; color: white; padding: 1rem; display: flex; flex-direction: column; }
+    #sidebar a { color: white; margin: 0.5rem 0; text-decoration: none; cursor: pointer; }
+    #main { flex: 1; padding: 1rem; overflow-y: auto; }
+    .page { display: none; }
+    .active { display: block !important; }
+    .suggestion { border: 1px solid #ccc; padding: 0.5rem; margin-bottom: 0.5rem; }
+    .query, .complaint { border: 1px solid #ccc; padding: 0.5rem; margin-bottom: 0.5rem; }
+    .btn { cursor: pointer; padding: 0.3rem 0.5rem; margin-left: 0.5rem; }
+  </style>
 </head>
 <body>
-
-<!-- Login Page -->
-<div id="login-page" role="main" aria-label="Login Page">
-  <form id="login-form" aria-describedby="login-error" autocomplete="off">
-    <h2>MessMate Login</h2>
-    <div id="login-error" role="alert" aria-live="assertive"></div>
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter username" />
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter password" />
-    <button type="submit" aria-label="Login">Login</button>
-  </form>
+<div id="login-page">
+  <div class="login-box">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input id="username" placeholder="Username" required /><br />
+      <input id="password" type="password" placeholder="Password" required /><br />
+      <button type="submit">Login</button>
+      <p id="login-error" style="color: red;"></p>
+    </form>
+  </div>
 </div>
-
-<!-- Main App -->
-<div id="app" aria-label="MessMate Application" style="display:none;">
-  <button id="sidebarToggle" aria-label="Toggle sidebar menu">☰ Menu</button>
-  <aside id="sidebar" role="navigation" aria-label="Main Navigation">
-    <h2>MessMate</h2>
-    <nav>
-      <a href="#" data-page="dashboard" class="active" tabindex="0">Dashboard</a>
-      <a href="#" data-page="queries" tabindex="0">Student Queries</a>
-      <a href="#" data-page="suggestions" tabindex="0">Menu Suggestions</a>
-      <a href="#" data-page="settings" tabindex="0" aria-disabled="true" style="opacity:0.5;cursor:not-allowed;">Settings</a>
-      <a href="#" data-page="ai" tabindex="0" aria-disabled="true" style="opacity:0.5;cursor:not-allowed;">Virtual Nutritionist AI</a>
-      <a href="#" data-page="profile" tabindex="0" aria-disabled="true" style="opacity:0.5;cursor:not-allowed;">My Profile</a>
-    </nav>
-    <button id="logout-btn" aria-label="Logout">Logout</button>
-  </aside>
-
-  <main id="main-content" role="main" tabindex="-1">
-
-    <!-- Dashboard Page -->
-    <section id="dashboard" class="page active" aria-label="Dashboard Page">
-      <h1>Dashboard</h1>
-      <div class="tabs" role="tablist" aria-label="Dashboard tabs">
-        <button class="tab-btn active" data-tab="daily-menu" role="tab" aria-selected="true" tabindex="0">Daily Menu</button>
-        <button class="tab-btn" data-tab="complaints" role="tab" aria-selected="false" tabindex="-1">Complaint Center</button>
-        <button class="tab-btn" data-tab="reviews" role="tab" aria-selected="false" tabindex="-1">Add Review</button>
-      </div>
-
-      <div id="daily-menu" class="tab-content" role="tabpanel">
-        <h2>Today's Menu</h2>
-        <ul id="menu-list" class="menu-list" aria-live="polite" aria-atomic="true">
-          <!-- Menu items inserted by JS -->
-        </ul>
-      </div>
-
-      <div id="complaints" class="tab-content hidden" role="tabpanel">
-        <h2>Submit a Complaint</h2>
-        <form id="complaint-form" aria-label="Complaint submission form">
-          <label for="complaint-meal">Meal</label>
-          <select id="complaint-meal" name="complaint-meal" required aria-required="true">
-            <option value="" disabled selected>Select meal</option>
-            <option value="Breakfast">Breakfast</option>
-            <option value="Lunch">Lunch</option>
-            <option value="Dinner">Dinner</option>
-          </select>
-          <label for="complaint-text">Complaint Details</label>
-          <textarea id="complaint-text" name="complaint-text" placeholder="Describe the issue..." required aria-required="true"></textarea>
-          <label for="complaint-photo">Attach Photo (optional)</label>
-          <input type="file" id="complaint-photo" name="complaint-photo" accept="image/*" aria-describedby="photo-help" />
-          <small id="photo-help">Attach photo for better evidence (optional)</small>
-          <button type="submit">Submit Complaint</button>
-        </form>
-      </div>
-
-      <div id="reviews" class="tab-content hidden" role="tabpanel">
-        <h2>Add Meal Review</h2>
-        <form id="review-form" aria-label="Meal review submission form">
-          <label for="review-meal">Meal</label>
-          <select id="review-meal" name="review-meal" required aria-required="true">
-            <option value="" disabled selected>Select meal</option>
-            <option value="Breakfast">Breakfast</option>
-            <option value="Lunch">Lunch</option>
-            <option value="Dinner">Dinner</option>
-          </select>
-          <label for="review-rating">Rating (1 to 5)</label>
-          <select id="review-rating" name="review-rating" required aria-required="true">
-            <option value="" disabled selected>Choose rating</option>
-            <option value="1">1 - Poor</option>
-            <option value="2">2 - Fair</option>
-            <option value="3">3 - Good</option>
-            <option value="4">4 - Very Good</option>
-            <option value="5">5 - Excellent</option>
-          </select>
-          <label for="review-comments">Comments</label>
-          <textarea id="review-comments" name="review-comments" placeholder="Write your review here..."></textarea>
-          <button type="submit">Submit Review</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- Queries Page -->
-    <section id="queries" class="page" aria-label="Student Queries Page">
-      <h1>Student Queries</h1>
-      <div id="queries-list" aria-live="polite" aria-atomic="true">
-        <!-- Queries inserted here -->
-      </div>
-      <form id="query-submit-form" aria-label="Ask a new query form">
-        <label for="query-type">Query Type</label>
-        <select id="query-type" name="query-type" required aria-required="true">
-          <option value="" disabled selected>Select type</option>
-          <option value="Food Quality">Food Quality</option>
-          <option value="Service">Service</option>
-          <option value="Menu">Menu</option>
-          <option value="General">General</option>
-        </select>
-        <label for="query-text">Your Query</label>
-        <textarea id="query-text" name="query-text" placeholder="Ask your question..." required aria-required="true"></textarea>
-        <button type="submit">Submit Query</button>
+<div id="app">
+  <div id="sidebar">
+    <h3>MessMate</h3>
+    <a data-page="dashboard">Dashboard</a>
+    <a data-page="queries">Queries</a>
+    <a data-page="suggestions">Suggestions</a>
+    <a data-page="settings">Settings</a>
+    <a data-page="profile">Profile</a>
+    <a id="logout">Logout</a>
+  </div>
+  <div id="main">
+    <div id="dashboard" class="page">
+      <h2>Dashboard</h2>
+      <h3>Daily Menu</h3>
+      <ul id="menu-list"></ul>
+      <h3>Complaints</h3>
+      <div id="complaints"></div>
+    </div>
+    <div id="queries" class="page">
+      <h2>Student Queries</h2>
+      <div id="queries-list"></div>
+      <form id="query-form">
+        <input id="query-input" placeholder="Type your query" required />
+        <button type="submit">Submit</button>
       </form>
-    </section>
-
-    <!-- Menu Suggestions Page -->
-    <section id="suggestions" class="page" aria-label="Menu Suggestions Page">
-      <h1>Menu Suggestions</h1>
-      <form id="suggestion-form" aria-label="Submit a menu suggestion form">
-        <label for="suggestion-day">Day</label>
-        <select id="suggestion-day" name="suggestion-day" required aria-required="true">
-          <option value="" disabled selected>Select day</option>
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
-          <option value="Sunday">Sunday</option>
-        </select>
-        <label for="suggestion-meal">Meal</label>
-        <select id="suggestion-meal" name="suggestion-meal" required aria-required="true">
-          <option value="" disabled selected>Select meal</option>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Dinner">Dinner</option>
-        </select>
-        <label for="suggestion-comments">Suggestion Details</label>
-        <textarea id="suggestion-comments" name="suggestion-comments" placeholder="Write your suggestion here..." required aria-required="true"></textarea>
-        <button type="submit">Submit Suggestion</button>
+    </div>
+    <div id="suggestions" class="page">
+      <h2>Menu Suggestions</h2>
+      <form id="suggestion-form">
+        <input id="suggestion-input" placeholder="Your suggestion" required />
+        <button type="submit">Submit</button>
       </form>
-
-      <h2>Popular Suggestions</h2>
-      <div id="suggestions-list" aria-live="polite" aria-atomic="true">
-        <!-- Suggestions populated here -->
-      </div>
-    </section>
-
-    <!-- Placeholder for other pages -->
-    <section id="settings" class="page" aria-label="Settings Page" style="display:none;">
-      <h1>Settings</h1>
-      <p>Coming Soon...</p>
-    </section>
-    <section id="ai" class="page" aria-label="Virtual Nutritionist AI Page" style="display:none;">
-      <h1>Virtual Nutritionist AI</h1>
-      <p>Coming Soon...</p>
-    </section>
-    <section id="profile" class="page" aria-label="Profile Page" style="display:none;">
-      <h1>My Profile</h1>
-      <p>Coming Soon...</p>
-    </section>
-
-  </main>
+      <div id="suggestions-list"></div>
+    </div>
+    <div id="settings" class="page"><h2>Settings (Coming Soon)</h2></div>
+    <div id="profile" class="page"><h2>Profile (Coming Soon)</h2></div>
+  </div>
 </div>
-
 <script>
-  (function(){
-    // Allowed users: username => password
-    const allowedUsers = {
-      'jana': 'harrypotter',
-      'harrypotter': 'harrypotter',
-      'ron': 'ron123',
-      'hermione': 'hermione456'
-    };
+  const users = { jana: 'harrypotter', harrypotter: 'harrypotter' };
+  const loginForm = document.getElementById('login-form');
+  const loginPage = document.getElementById('login-page');
+  const app = document.getElementById('app');
+  const loginError = document.getElementById('login-error');
 
-    // Elements
-    const loginPage = document.getElementById('login-page');
-    const app = document.getElementById('app');
-    const loginForm = document.getElementById('login-form');
-    const loginError = document.getElementById('login-error');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const logoutBtn = document.getElementById('logout-btn');
-    const navLinks = sidebar.querySelectorAll('nav a');
-    const pages = document.querySelectorAll('.page');
-    const mainContent = document.getElementById('main-content');
+  const suggestionsData = [
+    { text: 'Add pasta on Wednesdays', votes: 3 },
+    { text: 'Include fruit juice in breakfast', votes: 5 }
+  ];
 
-    // Dashboard tabs
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+  const queriesData = [
+    { text: 'Why is dal so watery?', answer: 'We are addressing this', verified: true },
+    { text: 'Can we have curd daily?', answer: null, verified: false }
+  ];
 
-    // Forms & containers
+  const complaintsData = [
+    { text: 'Too much oil in dinner', status: 'Pending' },
+    { text: 'Cold chapatis', status: 'Resolved' }
+  ];
+
+  const menuData = ['Poha, Tea', 'Dal, Rice, Sabzi', 'Chapati, Paneer'];
+
+  loginForm.onsubmit = e => {
+    e.preventDefault();
+    const user = username.value;
+    const pass = password.value;
+    if (users[user] === pass) {
+      loginPage.style.display = 'none';
+      app.style.display = 'flex';
+      showPage('dashboard');
+      renderAll();
+    } else {
+      loginError.textContent = 'Invalid credentials';
+    }
+  };
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  document.querySelectorAll('#sidebar a[data-page]').forEach(link => {
+    link.onclick = () => showPage(link.getAttribute('data-page'));
+  });
+
+  document.getElementById('logout').onclick = () => {
+    app.style.display = 'none';
+    loginPage.style.display = 'flex';
+    loginForm.reset();
+  };
+
+  function renderAll() {
     const menuList = document.getElementById('menu-list');
-    const complaintForm = document.getElementById('complaint-form');
-    const reviewForm = document.getElementById('review-form');
-    const queriesList = document.getElementById('queries-list');
-    const querySubmitForm = document.getElementById('query-submit-form');
-    const suggestionForm = document.getElementById('suggestion-form');
-    const suggestionsList = document.getElementById('suggestions-list');
-
-    // Current user state
-    let currentUser = null;
-
-    // Sample Daily Menu (could be fetched or dynamic)
-    const dailyMenu = [
-      { meal: 'Breakfast', dishes: ['Poha', 'Tea', 'Fruit Salad'] },
-      { meal: 'Lunch', dishes: ['Rice', 'Dal', 'Mixed Veg', 'Chapati'] },
-      { meal: 'Dinner', dishes: ['Roti', 'Paneer Butter Masala', 'Salad'] }
-    ];
-
-    // Storage keys
-    const STORAGE_KEYS = {
-      complaints: 'messmate_complaints',
-      reviews: 'messmate_reviews',
-      queries: 'messmate_queries',
-      suggestions: 'messmate_suggestions',
-      currentUser: 'messmate_currentUser'
-    };
-
-    // Load/save helpers
-    function saveToStorage(key, data) {
-      localStorage.setItem(key, JSON.stringify(data));
-    }
-    function loadFromStorage(key, defaultValue) {
-      try {
-        const raw = localStorage.getItem(key);
-        if(!raw) return defaultValue;
-        return JSON.parse(raw);
-      } catch(e) {
-        return defaultValue;
-      }
-    }
-
-    // Data arrays
-    let complaints = loadFromStorage(STORAGE_KEYS.complaints, []);
-    let reviews = loadFromStorage(STORAGE_KEYS.reviews, []);
-    let queries = loadFromStorage(STORAGE_KEYS.queries, [
-      // Placeholder queries
-      {
-        id: 1,
-        type: "Food Quality",
-        text: "Why is the rice sometimes too dry?",
-        answer: "We are working on improving rice quality, thanks for the feedback!",
-        verified: true,
-        answeredBy: "Mess Coordinator",
-        submittedBy: "ron",
-        date: "2025-06-25T08:30:00Z"
-      },
-      {
-        id: 2,
-        type: "Service",
-        text: "The servers sometimes are late during dinner.",
-        answer: null,
-        verified: false,
-        answeredBy: null,
-        submittedBy: "hermione",
-        date: "2025-06-26T13:15:00Z"
-      },
-      {
-        id: 3,
-        type: "Menu",
-        text: "Can we have more vegan options?",
-        answer: "Great suggestion! We will add some vegan meals next month.",
-        verified: false,
-        answeredBy: "Student",
-        submittedBy: "jana",
-        date: "2025-06-27T10:00:00Z"
-      }
-    ]);
-    let suggestions = loadFromStorage(STORAGE_KEYS.suggestions, [
-      {
-        id: 1,
-        day: "Monday",
-        meal: "Lunch",
-        comments: "Add more paneer dishes please!",
-        votes: 7,
-        submittedBy: "ron",
-        date: "2025-06-20T09:00:00Z"
-      },
-      {
-        id: 2,
-        day: "Friday",
-        meal: "Dinner",
-        comments: "Include lemon rice once a week.",
-        votes: 15,
-        submittedBy: "hermione",
-        date: "2025-06-22T11:20:00Z"
-      }
-    ]);
-
-    // Utility: format date nicely
-    function formatDate(dateString) {
-      const d = new Date(dateString);
-      return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
-    }
-
-    // Login form submit handler
-    loginForm.addEventListener('submit', e => {
-      e.preventDefault();
-      loginError.textContent = '';
-      const username = usernameInput.value.trim().toLowerCase();
-      const password = passwordInput.value.trim();
-
-      if (allowedUsers[username] && allowedUsers[username] === password) {
-        currentUser = username;
-        saveToStorage(STORAGE_KEYS.currentUser, currentUser);
-        loginPage.style.display = 'none';
-        app.style.display = 'flex';
-        loadDashboard();
-      } else {
-        loginError.textContent = 'Invalid username or password.';
-      }
+    menuList.innerHTML = '';
+    menuData.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      menuList.appendChild(li);
     });
 
-    // Load dashboard after login
-    function loadDashboard() {
-      renderMenu();
-      renderComplaints();
-      renderReviews();
-      renderQueries();
-      renderSuggestions();
-      showPage('menu');
-      sidebar.style.display = 'block';
-    }
-
-    // Logout
-    logoutBtn.addEventListener('click', () => {
-      currentUser = null;
-      saveToStorage(STORAGE_KEYS.currentUser, '');
-      app.style.display = 'none';
-      loginPage.style.display = 'flex';
-      clearForms();
-      sidebar.style.display = 'none';
-      showPage('menu');
+    const complaints = document.getElementById('complaints');
+    complaints.innerHTML = '';
+    complaintsData.forEach(c => {
+      complaints.innerHTML += `<div class="complaint"><b>${c.text}</b> - ${c.status}</div>`;
     });
 
-    // Sidebar navigation
-    navLinks.forEach(link => {
-      link.addEventListener('click', e => {
-        e.preventDefault();
-        const target = link.getAttribute('data-target');
-        showPage(target);
-        if (window.innerWidth < 768) sidebar.style.display = 'none';
-      });
+    const qlist = document.getElementById('queries-list');
+    qlist.innerHTML = '';
+    queriesData.forEach(q => {
+      qlist.innerHTML += `<div class="query">
+        <b>${q.text}</b><br/>
+        ${q.answer ? 'Answer: ' + q.answer : 'Unanswered'}
+        ${q.verified ? ' <span style="color: green;">[Verified]</span>' : ''}
+      </div>`;
     });
 
-    // Sidebar toggle for mobile
-    sidebarToggle.addEventListener('click', () => {
-      if (sidebar.style.display === 'block') sidebar.style.display = 'none';
-      else sidebar.style.display = 'block';
+    const slist = document.getElementById('suggestions-list');
+    slist.innerHTML = '';
+    suggestionsData.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'suggestion';
+      div.innerHTML = `
+        ${s.text} - Votes: <span id="vote-${i}">${s.votes}</span>
+        <button class="btn" onclick="vote(${i},1)">Upvote</button>
+        <button class="btn" onclick="vote(${i},-1)">Downvote</button>
+      `;
+      slist.appendChild(div);
     });
+  }
 
-    // Show page function
-    function showPage(pageId) {
-      pages.forEach(p => p.style.display = 'none');
-      const page = document.getElementById(pageId);
-      if (page) page.style.display = 'block';
-    }
+  function vote(i, change) {
+    suggestionsData[i].votes += change;
+    document.getElementById(`vote-${i}`).textContent = suggestionsData[i].votes;
+  }
 
-    // Clear form inputs
-    function clearForms() {
-      complaintForm.reset();
-      reviewForm.reset();
-      querySubmitForm.reset();
-      suggestionForm.reset();
-    }
+  document.getElementById('query-form').onsubmit = e => {
+    e.preventDefault();
+    const text = document.getElementById('query-input').value;
+    queriesData.push({ text, answer: null, verified: false });
+    document.getElementById('query-input').value = '';
+    renderAll();
+  };
 
-    // Render Menu
-    function renderMenu() {
-      menuList.innerHTML = '';
-      dailyMenu.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'menu-item';
-        div.innerHTML = `<h3>${m.meal}</h3><ul>${m.dishes.map(d => `<li>${d}</li>`).join('')}</ul>`;
-        menuList.appendChild(div);
-      });
-    }
-
-    // Render Complaints
-    function renderComplaints() {
-      const container = document.getElementById('complaints-list');
-      container.innerHTML = '';
-      if (complaints.length === 0) {
-        container.innerHTML = '<p>No complaints submitted yet.</p>';
-        return;
-      }
-      complaints.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'complaint-entry';
-        div.innerHTML = `
-          <p><strong>By:</strong> ${c.submittedBy} <strong>Date:</strong> ${formatDate(c.date)}</p>
-          <p><strong>Complaint:</strong> ${c.text}</p>
-          <p><strong>Status:</strong> ${c.status}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // Complaint form submit
-    complaintForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const complaintText = complaintForm['complaint-text'].value.trim();
-      if (!complaintText) return alert('Please enter your complaint.');
-      const newComplaint = {
-        id: Date.now(),
-        text: complaintText,
-        submittedBy: currentUser,
-        date: new Date().toISOString(),
-        status: 'Pending'
-      };
-      complaints.push(newComplaint);
-      saveToStorage(STORAGE_KEYS.complaints, complaints);
-      renderComplaints();
-      complaintForm.reset();
-      alert('Complaint submitted successfully.');
-    });
-
-    // Render Reviews
-    function renderReviews() {
-      const container = document.getElementById('reviews-list');
-      container.innerHTML = '';
-      if (reviews.length === 0) {
-        container.innerHTML = '<p>No reviews submitted yet.</p>';
-        return;
-      }
-      reviews.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'review-entry';
-        div.innerHTML = `
-          <p><strong>By:</strong> ${r.submittedBy} <strong>Date:</strong> ${formatDate(r.date)}</p>
-          <p><strong>Meal:</strong> ${r.meal} <strong>Rating:</strong> ${r.rating}/5</p>
-          <p><strong>Comments:</strong> ${r.comments}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // Review form submit
-    reviewForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const meal = reviewForm['review-meal'].value;
-      const rating = reviewForm['review-rating'].value;
-      const comments = reviewForm['review-comments'].value.trim();
-      if (!meal || !rating) return alert('Please select meal and rating.');
-      const newReview = {
-        id: Date.now(),
-        meal,
-        rating,
-        comments,
-        submittedBy: currentUser,
-        date: new Date().toISOString()
-      };
-      reviews.push(newReview);
-      saveToStorage(STORAGE_KEYS.reviews, reviews);
-      renderReviews();
-      reviewForm.reset();
-      alert('Review submitted successfully.');
-    });
-
-    // Render Queries
-    function renderQueries() {
-      queriesList.innerHTML = '';
-      if (queries.length === 0) {
-        queriesList.innerHTML = '<p>No queries submitted yet.</p>';
-        return;
-      }
-      queries.forEach(q => {
-        const div = document.createElement('div');
-        div.className = 'query-entry';
-        div.innerHTML = `
-          <p><strong>Type:</strong> ${q.type} <strong>By:</strong> ${q.submittedBy} <strong>Date:</strong> ${formatDate(q.date)}</p>
-          <p><strong>Query:</strong> ${q.text}</p>
-          <p><strong>Status:</strong> ${q.answer ? 'Resolved' : 'Unresolved'}</p>
-          ${q.answer ? `<p><strong>Answer:</strong> ${q.answer} <em>(By ${q.answeredBy})</em></p>` : ''}
-          ${q.verified ? '<p><em>Verified</em></p>' : ''}
-        `;
-        queriesList.appendChild(div);
-      });
-    }
-
-    // Query submit form
-    querySubmitForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const type = querySubmitForm['query-type'].value;
-      const text = querySubmitForm['query-text'].value.trim();
-      if (!type || !text) return alert('Please select query type and enter your query.');
-      const newQuery = {
-        id: Date.now(),
-        type,
-        text,
-        answer: null,
-        verified: false,
-        answeredBy: null,
-        submittedBy: currentUser,
-        date: new Date().toISOString()
-      };
-      queries.push(newQuery);
-      saveToStorage(STORAGE_KEYS.queries, queries);
-      renderQueries();
-      querySubmitForm.reset();
-      alert('Query submitted successfully.');
-    });
-
-    // Render Suggestions
-    function renderSuggestions() {
-      suggestionsList.innerHTML = '';
-      if (suggestions.length === 0) {
-        suggestionsList.innerHTML = '<p>No suggestions submitted yet.</p>';
-        return;
-      }
-      // Sort by votes descending
-      suggestions.sort((a,b) => b.votes - a.votes);
-      suggestions.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'suggestion-entry';
-        div.innerHTML = `
-          <p><strong>Day:</strong> ${s.day} <strong>Meal:</strong> ${s.meal} <strong>Votes:</strong> ${s.votes}</p>
-          <p><strong>Suggestion:</strong> ${s.comments}</p>
-          <p><strong>By:</strong> ${s.submittedBy} <strong>Date:</strong> ${formatDate(s.date)}</p>
-        `;
-        suggestionsList.appendChild(div);
-      });
-    }
-
-    // Suggestion form submit
-    suggestionForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const day = suggestionForm['suggestion-day'].value;
-      const meal = suggestionForm['suggestion-meal'].value;
-      const comments = suggestionForm['suggestion-comments'].value.trim();
-      if (!day || !meal || !comments) return alert('Please fill all fields.');
-      const newSuggestion = {
-        id: Date.now(),
-        day,
-        meal,
-        comments,
-        votes: 0,
-        submittedBy: currentUser,
-        date: new Date().toISOString()
-      };
-      suggestions.push(newSuggestion);
-      saveToStorage(STORAGE_KEYS.suggestions, suggestions);
-      renderSuggestions();
-      suggestionForm.reset();
-      alert('Suggestion submitted successfully.');
-    });
-
-    // On page load, check if user is already logged in
-    (function init() {
-      const savedUser = loadFromStorage(STORAGE_KEYS.currentUser, '');
-      if (savedUser && allowedUsers[savedUser]) {
-        currentUser = savedUser;
-        loginPage.style.display = 'none';
-        app.style.display = 'flex';
-        loadDashboard();
-      }
-    })();
-
-  })();
+  document.getElementById('suggestion-form').onsubmit = e => {
+    e.preventDefault();
+    const text = document.getElementById('suggestion-input').value;
+    suggestionsData.push({ text, votes: 0 });
+    document.getElementById('suggestion-input').value = '';
+    renderAll();
+  };
 </script>
-
 </body>
 </html>
